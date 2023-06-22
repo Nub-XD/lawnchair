@@ -18,6 +18,7 @@ package com.android.quickstep.util;
 import static com.android.launcher3.Utilities.supportsRoundedCornersOnWindows;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -26,8 +27,13 @@ import com.android.launcher3.util.Themes;
 public class TaskCornerRadius {
 
     public static float get(Context context) {
-        return Utilities.ATLEAST_Q && supportsRoundedCornersOnWindows(context.getResources()) ?
-                Themes.getDialogCornerRadius(context):
-                context.getResources().getDimension(R.dimen.task_corner_radius_small);
+        Resources resources = context.getResources();
+        if (!supportsRoundedCornersOnWindows(resources)) {
+            return resources.getDimension(R.dimen.task_corner_radius_small);
+        }
+
+        float overriddenRadius =
+                resources.getDimension(R.dimen.task_corner_radius_override);
+        return (overriddenRadius > 0) ? overriddenRadius : Themes.getDialogCornerRadius(context);
     }
 }
